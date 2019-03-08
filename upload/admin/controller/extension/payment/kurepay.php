@@ -17,7 +17,7 @@ class ControllerExtensionPaymentKurepay extends Controller
 
         if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
 
-            $this->model_setting_setting->editSetting('kurepay', $this->request->post);
+            $this->model_setting_setting->editSetting('payment_kurepay', $this->request->post);
             $this->session->data['success'] = 'Success: You have modified your Kurepay account details!';
             $this->response->redirect($this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment'));
         }
@@ -40,19 +40,48 @@ class ControllerExtensionPaymentKurepay extends Controller
             'href' => $this->url->link('extension/payment/kurepay', 'user_token=' . $this->session->data['user_token'])
         );
 
-//        $data['heading_title'] = $this->language->get('heading_title');
-//        $data['entry_text_config_one'] = $this->language->get('text_config_one');
-//        $data['entry_text_config_two'] = $this->language->get('text_config_two');
-//        $data['button_save'] = $this->language->get('text_button_save');
-//        $data['button_cancel'] = $this->language->get('text_button_cancel');
-//        $data['entry_order_status'] = $this->language->get('entry_order_status');
-//        $data['text_enabled'] = $this->language->get('text_enabled');
-//        $data['text_disabled'] = $this->language->get('text_disabled');
-//        $data['entry_status'] = $this->language->get('entry_status');
-
         $data['action'] = $this->url->link('extension/payment/kurepay', 'user_token=' . $this->session->data['user_token']);
 
         $data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=payment');
+
+        if (isset($this->request->post['payment_kurepay_total'])) {
+            $data['payment_kurepay_total'] = $this->request->post['payment_kurepay_total'];
+        } else {
+            $data['payment_kurepay_total'] = $this->config->get('payment_kurepay_total');
+        }
+
+        $this->load->model('localisation/order_status');
+
+        $data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
+
+        if (isset($this->request->post['payment_kurepay_status'])) {
+            $data['payment_kurepay_status'] = $this->request->post['payment_kurepay_status'];
+        } else {
+            $data['payment_kurepay_status'] = $this->config->get('payment_kurepay_status');
+        }
+        if (isset($this->request->post['payment_kurepay_order_status_id'])) {
+            $data['payment_kurepay_order_status_id'] = $this->request->post['payment_kurepay_order_status_id'];
+        } else {
+            $data['payment_kurepay_order_status_id'] = $this->config->get('payment_kurepay_order_status_id');
+        }
+
+        $this->load->model('localisation/geo_zone');
+
+        $data['geo_zones'] = $this->model_localisation_geo_zone->getGeoZones();
+
+        if (isset($this->request->post['payment_kurepay_geo_zone_id'])) {
+            $data['payment_kurepay_geo_zone_id'] = $this->request->post['payment_kurepay_geo_zone_id'];
+        } else {
+            $data['payment_kurepay_geo_zone_id'] = $this->config->get('payment_kurepay_geo_zone_id');
+        }
+
+
+        if (isset($this->request->post['payment_kurepay_sort_order'])) {
+            $data['payment_kurepay_sort_order'] = $this->request->post['payment_kurepay_sort_order'];
+        } else {
+            $data['payment_kurepay_sort_order'] = $this->config->get('payment_kurepay_sort_order');
+        }
+
 
         if (isset($this->request->post['payment_kurepay_public_key'])) {
             $data['payment_kurepay_public_key'] = $this->request->post['payment_kurepay_public_key'];
@@ -60,32 +89,6 @@ class ControllerExtensionPaymentKurepay extends Controller
             $data['payment_kurepay_public_key'] = $this->config->get('payment_kurepay_public_key');
         }
 
-//        if (isset($this->request->post['text_config_one'])) {
-//            $data['text_config_one'] = $this->request->post['text_config_one'];
-//        } else {
-//            $data['text_config_one'] = $this->config->get('text_config_one');
-//        }
-//
-//        if (isset($this->request->post['text_config_two'])) {
-//            $data['text_config_two'] = $this->request->post['text_config_two'];
-//        } else {
-//            $data['text_config_two'] = $this->config->get('text_config_two');
-//        }
-//
-//        if (isset($this->request->post['custom_status'])) {
-//            $data['custom_status'] = $this->request->post['custom_status'];
-//        } else {
-//            $data['custom_status'] = $this->config->get('custom_status');
-//        }
-//
-//        if (isset($this->request->post['custom_order_status_id'])) {
-//            $data['custom_order_status_id'] = $this->request->post['custom_order_status_id'];
-//        } else {
-//            $data['custom_order_status_id'] = $this->config->get('custom_order_status_id');
-//        }
-
-        $this->load->model('localisation/order_status');
-        $data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
@@ -95,3 +98,5 @@ class ControllerExtensionPaymentKurepay extends Controller
         $this->response->setOutput($this->load->view('extension/payment/kurepay_view', $data));
     }
 }
+
+// // 
